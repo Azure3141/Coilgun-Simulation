@@ -1,19 +1,20 @@
 import methods
 
 on_drivers = []
+driver_currents = []
 def run_turn(timestep, stage_list, projectile):
-
+    armature = projectile.coil
+    armature.pos = projectile.pos
     switch = min(projectile.stage, len(stage_list) - 1)
     force = 0
 
-    if(projectile.pos >= stage_list[switch].trigger_pos and switch <= len(stage_list)):
+    if(armature.pos >= stage_list[switch].trigger_pos and projectile.stage < len(stage_list)):
         on_drivers.append(stage_list[switch])
         projectile.stage += 1
         print("Switched stage", switch + 1)
 
     for stage in on_drivers:
         driver = stage.coil
-        armature = projectile.coil
 
         methods.increment_time(timestep, driver)
         methods.increment_time(timestep, armature)
@@ -24,6 +25,13 @@ def run_turn(timestep, stage_list, projectile):
 
         force += methods.magnetic_force(stage, projectile)
 
+    for stage in stage_list:
+        driver = stage.coil
+        driver.currents_list.append(driver.current)
+        driver.energy_list.append(driver.energy)
+
+    armature.energy_list.append(armature.energy)
+
     methods.solve_kinematics(projectile, force, timestep)
-    #print(stage_list[0].coil.current, stage_list[1].coil.current)
-    return projectile
+
+    return projectile, armature

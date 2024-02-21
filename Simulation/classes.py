@@ -29,8 +29,10 @@ class Coil:
 
         self.inductance = parameters.mu0 * self.area * pow(self.turns, 2) / length
         self.resistance = self.wire_resistance
-
         self.tau = self.inductance / self.resistance
+
+        self.currents_list = []
+        self.energy_list = []
 
         print("Wire Length", self.wire_length, "m")
         print("Wire Mass", self.wire_mass, "kg")

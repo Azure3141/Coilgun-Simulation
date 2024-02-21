@@ -75,11 +75,13 @@ def magnetic_force(stage, projectile):
 
 
 def solve_kinematics(projectile, F, timestep):
+    armature = projectile.coil
+
     projectile.accel = F / projectile.mass
     projectile.vel = projectile.vel + projectile.accel * timestep
     projectile.pos = projectile.pos + projectile.vel * timestep
+    armature.pos = projectile.pos
 
     projectile.kinetic_energy = pow(projectile.vel, 2) * 0.5 * projectile.mass
 
-    coil = projectile.coil
-    coil.pos = projectile.pos
+

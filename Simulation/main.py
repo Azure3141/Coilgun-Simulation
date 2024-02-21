@@ -26,39 +26,69 @@ stage5 = classes.Stage(driver5, 0.4, 0.4, 0.0048, 450)
 
 # Projectile
 # Coil, position, mass
-payload = classes.Projectile(armature, 0.01, 0.1)
+projectile = classes.Projectile(armature, 0.01, 0.1)
 
 
-runtime = 0.01
+runtime = 0.02
 timestep = 0.0001
 
 stage_list = [stage1, stage2, stage3, stage4, stage5]
 velocities = []
 accelerations = []
 positions = []
+armature_currents = []
+
+armature_energy = []
+driver_energy = []
+efficiency = []
 
 for step in np.arange(0, runtime, timestep):
     # Timestep, step, driver list, projectile
-    output = run.run_turn(timestep, stage_list, payload)
-    velocities.append(output.vel)
-    accelerations.append(output.accel)
-    positions.append(output.pos)
+    output = run.run_turn(timestep, stage_list, projectile)
 
+    velocities.append(output[0].vel)
+    accelerations.append(output[0].accel)
+    positions.append(output[0].pos)
+    armature_currents.append(output[0].coil.current)
+
+    armature_energy.append(armature.energy)
+    driver_energy.append(driver1.energy + driver2.energy + driver3.energy + driver4.energy + driver5.energy)
+    efficiency.append(armature.energy / (driver1.energy + driver2.energy + driver3.energy + driver4.energy + driver5.energy))
+
+
+time = np.arange(0, runtime, timestep)
 
 figp, p = plt.subplots()
-p.plot(np.arange(0, runtime, timestep), positions)
+p.plot(time, positions)
 p.set(xlabel='Time (s)', ylabel='Position (m)', title='Projectile Position')
-figp.savefig("vel.png")
+figp.savefig("pos.png")
 
 figv, v = plt.subplots()
-v.plot(np.arange(0, runtime, timestep), velocities)
+v.plot(time, velocities)
 v.set(xlabel='Time (s)', ylabel='Velocity (m/s)', title='Projectile Velocity')
 figv.savefig("vel.png")
 
 figa, p = plt.subplots()
-p.plot(np.arange(0, runtime, timestep), accelerations)
+p.plot(time, accelerations)
 p.set(xlabel='Time (s)', ylabel='Acceleration (m/s^2)', title='Projectile Acceleration')
 figa.savefig("accel.png")
 
-plt.show()
+figi, i = plt.subplots()
+i.plot(time, driver1.currents_list, time, driver2.currents_list, time, driver3.currents_list, time, driver4.currents_list, time, driver5.currents_list, time, armature_currents)
+i.set(xlabel='Time (s)', ylabel='Currents (A)', title='Currents')
+i.legend(['Driver 1', 'Driver 2', 'Driver 3', 'Driver 4', 'Driver 5', 'Armature'])
+figi.savefig("currents.png")
 
+fign, n = plt.subplots()
+n.plot(time, efficiency)
+n.set(xlabel='Time (s)', ylabel='Efficiency', title='Coilgun Efficiency')
+fign.savefig("efficiency.png")
+
+fige, e = plt.subplots()
+e.plot(time, driver1.energy_list, time, driver2.energy_list, time, driver3.energy_list, time, driver4.energy_list, time, driver5.energy_list, time, armature.energy_list)
+e.set(xlabel='Time (s)', ylabel='Energy (J)', title='Energy')
+e.legend(['Driver 1', 'Driver 2', 'Driver 3', 'Driver 4', 'Driver 5', 'Armature'])
+fige.savefig("Energy.png")
+
+
+plt.show()
