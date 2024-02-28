@@ -162,8 +162,8 @@ def run_turn(timestep, step, coil1, coil2, trigger_positions):
 copper = Material(8960, 385, 1.68 * pow(10, -8), 0.00382 * pow(10, -8))
 
 # Type, initial position, material, inner radius, length, layers, wire diameter, capacitance
-driver = Coil("Driver", copper, 0, 0.015, 0.05, 3, 0.001024, 0.0048)
-armature = Coil("Proj", copper, 0.01, 0.0125, 0.05, 1, 0.001024, 0)
+driver = Coil("Driver", copper, 0, 0.015, 0.05, 3, 0.00129, 0.0048)
+armature = Coil("Proj", copper, 0.01, 0.0125, 0.05, 1, 0.00129, 0)
 
 driver_positions = [0, 0.1, 0.2, 0.3, 0.4]
 trigger_list = [0, 0.1, 0.2, 0.3, 0.4, 100]
@@ -171,7 +171,7 @@ trigger_list = [0, 0.1, 0.2, 0.3, 0.4, 100]
 armature.mass = 0.1
 driver.initial_voltage = 450
 
-runtime = 0.05
+runtime = 0.02
 timestep = 0.0001
 
 positions = []

@@ -37,6 +37,7 @@ class Coil:
         print("Wire Length", self.wire_length, "m")
         print("Wire Mass", self.wire_mass, "kg")
         print("Turns", self.turns)
+        print("mass", self.wire_mass, "kg")
 
 
 class Stage:
@@ -62,6 +63,11 @@ class Projectile:
         self.kinetic_energy = 0
         self.mass = mass
         self.stage = 0
+
+        self.position_list = []
+        self.velocity_list = []
+        self.acceleration_list = []
+        self.energy_list = []
 
 
 class Material:

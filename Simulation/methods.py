@@ -34,10 +34,15 @@ def increment_time(timestep, coil):
     coil.time_on += timestep
 
 
-def solve_thermals(coil, timestep):
+def solve_energy(coil, timestep):
     coil_power = pow(coil.current, 2) * coil.resistance
     coil.temp = coil.temp + coil_power / coil.thermal_mass * timestep
     coil.energy = coil.energy + coil_power * timestep
+
+
+def solve_thermals(coil, timestep):
+    coil_power = pow(coil.current, 2) * coil.resistance
+    coil.temp = coil.temp + coil_power / coil.thermal_mass * timestep
 
 
 def solve_resistance(coil):
@@ -83,5 +88,10 @@ def solve_kinematics(projectile, F, timestep):
     armature.pos = projectile.pos
 
     projectile.kinetic_energy = pow(projectile.vel, 2) * 0.5 * projectile.mass
+    armature.energy = projectile.kinetic_energy
+    projectile.energy_list.append(projectile.kinetic_energy)
+    projectile.acceleration_list.append(projectile.accel)
+    projectile.velocity_list.append(projectile.vel)
+    projectile.position_list.append(projectile.pos)
 
 

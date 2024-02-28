@@ -17,13 +17,16 @@ def run_turn(timestep, stage_list, projectile):
         driver = stage.coil
 
         methods.increment_time(timestep, driver)
-        methods.increment_time(timestep, armature)
         methods.solve_currents(stage, projectile, driver.time_on, armature.time_on)
-        methods.solve_thermals(driver, timestep)
-        methods.solve_thermals(armature, timestep)
-        methods.solve_resistance(armature)
+        methods.solve_energy(driver, timestep)
 
         force += methods.magnetic_force(stage, projectile)
+
+    methods.increment_time(timestep, armature)
+    methods.solve_thermals(armature, timestep)
+    methods.solve_resistance(armature)
+    methods.solve_kinematics(projectile, force, timestep)
+
 
     for stage in stage_list:
         driver = stage.coil
@@ -32,6 +35,6 @@ def run_turn(timestep, stage_list, projectile):
 
     armature.energy_list.append(armature.energy)
 
-    methods.solve_kinematics(projectile, force, timestep)
+
 
     return projectile, armature

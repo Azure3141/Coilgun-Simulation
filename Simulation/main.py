@@ -52,8 +52,9 @@ for step in np.arange(0, runtime, timestep):
     armature_currents.append(output[0].coil.current)
 
     armature_energy.append(armature.energy)
-    driver_energy.append(driver1.energy + driver2.energy + driver3.energy + driver4.energy + driver5.energy)
-    efficiency.append(armature.energy / (driver1.energy + driver2.energy + driver3.energy + driver4.energy + driver5.energy))
+    driver_energy_sum = driver1.energy + driver2.energy + driver3.energy + driver4.energy + driver5.energy
+    driver_energy.append(driver_energy_sum)
+    efficiency.append(armature.energy / driver_energy_sum + 0.001)
 
 
 time = np.arange(0, runtime, timestep)
@@ -74,9 +75,11 @@ p.set(xlabel='Time (s)', ylabel='Acceleration (m/s^2)', title='Projectile Accele
 figa.savefig("accel.png")
 
 figi, i = plt.subplots()
-i.plot(time, driver1.currents_list, time, driver2.currents_list, time, driver3.currents_list, time, driver4.currents_list, time, driver5.currents_list, time, armature_currents)
+i.plot(time, armature_currents)
+for stage in range(len(stage_list)):
+    i.plot(time, stage_list[stage].coil.currents_list)
 i.set(xlabel='Time (s)', ylabel='Currents (A)', title='Currents')
-i.legend(['Driver 1', 'Driver 2', 'Driver 3', 'Driver 4', 'Driver 5', 'Armature'])
+i.legend(['Armature', 'Driver 1', 'Driver 2', 'Driver 3', 'Driver 4', 'Driver 5'])
 figi.savefig("currents.png")
 
 fign, n = plt.subplots()
@@ -85,10 +88,12 @@ n.set(xlabel='Time (s)', ylabel='Efficiency', title='Coilgun Efficiency')
 fign.savefig("efficiency.png")
 
 fige, e = plt.subplots()
-e.plot(time, driver1.energy_list, time, driver2.energy_list, time, driver3.energy_list, time, driver4.energy_list, time, driver5.energy_list, time, armature.energy_list)
+e.plot(time, armature_energy)
+for stage in range(len(stage_list)):
+    e.plot(time, stage_list[stage].coil.energy_list)
 e.set(xlabel='Time (s)', ylabel='Energy (J)', title='Energy')
-e.legend(['Driver 1', 'Driver 2', 'Driver 3', 'Driver 4', 'Driver 5', 'Armature'])
-fige.savefig("Energy.png")
+e.legend(['Armature', 'Driver 1', 'Driver 2', 'Driver 3', 'Driver 4', 'Driver 5'])
+fige.savefig("energy.png")
 
 
 plt.show()
