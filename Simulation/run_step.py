@@ -5,6 +5,7 @@ driver_currents = []
 def run_turn(timestep, stage_list, projectile):
     armature = projectile.coil
     armature.pos = projectile.pos
+    armature.vel = projectile.vel
     switch = min(projectile.stage, len(stage_list) - 1)
     force = 0
 
@@ -18,6 +19,7 @@ def run_turn(timestep, stage_list, projectile):
 
         methods.increment_time(timestep, driver)
         methods.solve_currents(stage, projectile, driver.time_on, armature.time_on)
+        methods.solve_thermals(driver, timestep)
         methods.solve_energy(driver, timestep)
 
         force += methods.magnetic_force(stage, projectile)
@@ -25,16 +27,19 @@ def run_turn(timestep, stage_list, projectile):
     methods.increment_time(timestep, armature)
     methods.solve_thermals(armature, timestep)
     methods.solve_resistance(armature)
-    methods.solve_kinematics(projectile, force, timestep)
 
+    armature.currents_list.append(armature.current)
+    armature.energy_list.append(armature.energy)
+    armature.temperature_list.append(armature.temp)
+
+    methods.solve_kinematics(projectile, force, timestep)
 
     for stage in stage_list:
         driver = stage.coil
         driver.currents_list.append(driver.current)
         driver.energy_list.append(driver.energy)
+        driver.temperature_list.append(driver.temp)
 
-    armature.currents_list.append(armature.current)
-    armature.energy_list.append(armature.energy)
 
 
 

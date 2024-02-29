@@ -6,17 +6,22 @@ def mutual_inductance(stage, projectile):
     coil1 = stage.coil
     coil2 = projectile.coil
     M = 0
-    for i in range(int(coil1.turns)):
-        for j in range(int(coil2.turns)):
-            pos_i = stage.pos - coil1.length / 2 + coil1.wire_d / coil1.layers * i
-            pos_j = projectile.pos - coil1.length / 2 + coil2.wire_d / coil1.layers * j
-            z = pos_i - pos_j
 
-            k = 2*math.sqrt(coil1.r_avg * coil2.r_avg) / math.sqrt(pow((coil1.r_avg + coil2.r_avg), 2) + pow(z, 2))
-            k_k = sp.special.ellipk(pow(k, 2))
-            k_e = sp.special.ellipe(pow(k, 2))
+    for l1 in range(coil1.layers):
+        r1_eff = coil1.r_inner + l1 * coil1.wire_d
+        for l2 in range(coil2.layers):
+            r2_eff = coil2.r_inner + l2 * coil2.wire_d
+            for i in range(coil1.layer_turns[l1]):
+                for j in range(coil2.layer_turns[l2]):
+                    pos_i = stage.pos - coil1.length / 2 + coil1.wire_d * i
+                    pos_j = projectile.pos - coil2.length / 2 + coil2.wire_d * j
+                    z = pos_i - pos_j
 
-            M = M + (-parameters.mu0 * math.sqrt(coil1.r_avg * coil2.r_avg) * ((k - 2 / k) * k_k + 2 / k * k_e))
+                    k = 2 * math.sqrt(r1_eff * r2_eff) / math.sqrt(pow((r1_eff + r2_eff), 2) + pow(z, 2))
+                    k_k = sp.special.ellipk(pow(k, 2))
+                    k_e = sp.special.ellipe(pow(k, 2))
+
+                    M += -parameters.mu0 * math.sqrt(r1_eff * r2_eff) * ((k - 2 / k) * k_k + 2 / k * k_e)
 
     return M
 
@@ -37,7 +42,6 @@ def increment_time(timestep, coil):
 
 def solve_energy(coil, timestep):
     coil_power = pow(coil.current, 2) * coil.resistance
-    coil.temp = coil.temp + coil_power / coil.thermal_mass * timestep
     coil.energy = coil.energy + coil_power * timestep
 
 
@@ -94,5 +98,3 @@ def solve_kinematics(projectile, F, timestep):
     projectile.acceleration_list.append(projectile.accel)
     projectile.velocity_list.append(projectile.vel)
     projectile.position_list.append(projectile.pos)
-
-

@@ -12,10 +12,15 @@ class Coil:
 
         self.r_inner = r_inner
         self.length = length
-
         self.layers = layers
         self.wire_d = wire_d
         self.turns = round(length * layers / wire_d)
+
+        self.layer_turns = []
+        for l in range(layers):
+            self.layer_turns.append(round(length / wire_d))
+            print("Layer", l, self.layer_turns[l], "Turns")
+
         self.r_outer = r_inner + (layers - 1) * wire_d
         self.r_avg = (r_inner + self.r_outer) / 2
         self.area = pow(self.r_avg, 2) * np.pi
@@ -33,6 +38,7 @@ class Coil:
 
         self.currents_list = []
         self.energy_list = []
+        self.temperature_list = []
 
         print("Wire Length", self.wire_length, "m")
         print("Wire Mass", self.wire_mass, "kg")
