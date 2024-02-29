@@ -25,6 +25,7 @@ def solve_currents(stage, projectile, driver_step, armature_step):
     armature = projectile.coil
     driver = stage.coil
     M = mutual_inductance(stage, projectile)
+
     driver.current = stage.voltage / driver.inductance * driver_step * \
                           pow(math.e, -driver.resistance / (2 * driver.inductance) * driver_step)
     armature.current = -M / armature.inductance * driver.current * (1 - pow(math.e, -armature_step / armature.tau))

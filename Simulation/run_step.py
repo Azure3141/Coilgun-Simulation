@@ -33,6 +33,7 @@ def run_turn(timestep, stage_list, projectile):
         driver.currents_list.append(driver.current)
         driver.energy_list.append(driver.energy)
 
+    armature.currents_list.append(armature.current)
     armature.energy_list.append(armature.energy)
 
 

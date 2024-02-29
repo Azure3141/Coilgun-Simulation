@@ -18,29 +18,28 @@ driver5 = classes.Coil(copper, 0.015, 0.05, 3, 0.00129)
 
 # Stages
 # Coil, position, trigger position, capacitance, voltage
-stage1 = classes.Stage(driver1, 0.0, 0.0, 0.0048, 450)
-stage2 = classes.Stage(driver2, 0.1, 0.1, 0.0048, 450)
-stage3 = classes.Stage(driver3, 0.2, 0.2, 0.0048, 450)
-stage4 = classes.Stage(driver4, 0.3, 0.3, 0.0048, 450)
-stage5 = classes.Stage(driver5, 0.4, 0.4, 0.0048, 450)
+stage1 = classes.Stage(driver1, 0.0, 0.0, 0.00306, 1000)
+stage2 = classes.Stage(driver2, 0.1, 0.1, 0.00306, 1000)
+stage3 = classes.Stage(driver3, 0.2, 0.2, 0.00306, 1000)
+stage4 = classes.Stage(driver4, 0.3, 0.3, 0.00306, 1000)
+stage5 = classes.Stage(driver5, 0.4, 0.4, 0.00306, 1000)
 
 # Projectile
 # Coil, position, mass
 projectile = classes.Projectile(armature, 0.01, 0.1)
 
 
-runtime = 0.02
-timestep = 0.0001
-
 stage_list = [stage1, stage2, stage3, stage4, stage5]
 velocities = []
 accelerations = []
 positions = []
-armature_currents = []
 
 armature_energy = []
 driver_energy = []
 efficiency = []
+
+runtime = 0.025
+timestep = 0.0001
 
 for step in np.arange(0, runtime, timestep):
     # Timestep, step, driver list, projectile
@@ -49,7 +48,6 @@ for step in np.arange(0, runtime, timestep):
     velocities.append(output[0].vel)
     accelerations.append(output[0].accel)
     positions.append(output[0].pos)
-    armature_currents.append(output[0].coil.current)
 
     armature_energy.append(armature.energy)
     driver_energy_sum = driver1.energy + driver2.energy + driver3.energy + driver4.energy + driver5.energy
@@ -75,7 +73,7 @@ p.set(xlabel='Time (s)', ylabel='Acceleration (m/s^2)', title='Projectile Accele
 figa.savefig("accel.png")
 
 figi, i = plt.subplots()
-i.plot(time, armature_currents)
+i.plot(time, projectile.coil.currents_list)
 for stage in range(len(stage_list)):
     i.plot(time, stage_list[stage].coil.currents_list)
 i.set(xlabel='Time (s)', ylabel='Currents (A)', title='Currents')
