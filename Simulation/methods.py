@@ -22,7 +22,6 @@ def mutual_inductance(stage, projectile):
                     k_e = sp.special.ellipe(pow(k, 2))
 
                     M += -parameters.mu0 * math.sqrt(r1_eff * r2_eff) * ((k - 2 / k) * k_k + 2 / k * k_e)
-
     return M
 
 
@@ -31,9 +30,33 @@ def solve_currents(stage, projectile, driver_step, armature_step):
     driver = stage.coil
     M = mutual_inductance(stage, projectile)
 
-    driver.current = stage.voltage / driver.inductance * driver_step * \
-                          pow(math.e, -driver.resistance / (2 * driver.inductance) * driver_step)
-    armature.current = -M / armature.inductance * driver.current * (1 - pow(math.e, -armature_step / armature.tau))
+
+    # driver.current = stage.initial_voltage / driver.inductance * driver_step * \
+    #                       pow(math.e, -driver.resistance / (2 * driver.inductance) * driver_step)
+
+    # Natural response frequency
+    omega = math.sqrt(1/(driver.inductance * stage.capacitance) - pow(driver.resistance, 2) / (4 * pow(driver.inductance, 2)))
+
+    # Diode becomes active when capacitor voltage reaches 0
+    if(driver.voltage < 0):
+        # RL current model
+        driver.current = driver.peak_current * pow(math.e, -1 / driver.tau * (driver_step - driver.diode_step))
+        driver.voltage = -0.1
+    else:
+        # RLC current model
+        driver.current = (stage.capacitance * stage.initial_voltage * pow(math.e, -driver_step/(2 * driver.tau)) *
+                          (4 * pow(omega, 2) + pow(1 / driver.tau, 2)) * math.sin(driver_step * omega)) / (4 * omega)
+
+        # Capacitor voltage
+        driver.voltage = stage.initial_voltage * pow(math.e, -driver_step/(2 * driver.tau)) * \
+                         (1 / (2 * driver.tau * omega) * math.sin(omega * driver_step) + math.cos(omega * driver_step))
+
+        driver.peak_current = driver.current
+        driver.diode_step = driver_step
+
+    # transfer_eff = pow(M, 2) / (armature.inductance * driver.inductance)
+    transfer_eff = 1
+    armature.current = transfer_eff * -M / armature.inductance * driver.current * (1 - pow(math.e, -armature_step / armature.tau))
 
 
 def increment_time(timestep, coil):

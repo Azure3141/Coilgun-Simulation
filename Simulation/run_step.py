@@ -29,6 +29,7 @@ def run_turn(timestep, stage_list, projectile):
     methods.solve_resistance(armature)
 
     armature.currents_list.append(armature.current)
+    armature.voltage_list.append(armature.voltage)
     armature.energy_list.append(armature.energy)
     armature.temperature_list.append(armature.temp)
 
@@ -37,10 +38,8 @@ def run_turn(timestep, stage_list, projectile):
     for stage in stage_list:
         driver = stage.coil
         driver.currents_list.append(driver.current)
+        driver.voltage_list.append(driver.voltage)
         driver.energy_list.append(driver.energy)
         driver.temperature_list.append(driver.temp)
-
-
-
 
     return projectile, armature

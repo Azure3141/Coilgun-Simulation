@@ -6,9 +6,12 @@ import numpy as np
 class Coil:
     def __init__(self, material, r_inner, length, layers, wire_d):
         self.current = 0
+        self.voltage = 0
         self.energy = 0
         self.temp = parameters.ambient_temp
         self.time_on = 0
+        self.peak_current = 0
+        self.diode_step = 0
 
         self.r_inner = r_inner
         self.length = length
@@ -19,7 +22,7 @@ class Coil:
         self.layer_turns = []
         for l in range(layers):
             self.layer_turns.append(round(length / wire_d))
-            print("Layer", l, self.layer_turns[l], "Turns")
+            # print("Layer", l, self.layer_turns[l], "Turns")
 
         self.r_outer = r_inner + (layers - 1) * wire_d
         self.r_avg = (r_inner + self.r_outer) / 2
@@ -37,28 +40,41 @@ class Coil:
         self.tau = self.inductance / self.resistance
 
         self.currents_list = []
+        self.voltage_list = []
         self.energy_list = []
         self.temperature_list = []
 
-        print("Wire Length", self.wire_length, "m")
-        print("Wire Mass", self.wire_mass, "kg")
+        # print("Wire Length", self.wire_length, "m")
+        # print("Wire Mass", self.wire_mass, "kg")
         print("Turns", self.turns)
-        print("mass", self.wire_mass, "kg")
+        print("Coil Length", self.length)
+        print("Wire Diameter", self.wire_d)
+        print("Layers", self.layers)
+        # print("Resistance", self.wire_resistance, "Ohm")
+        # print("Inductance", self.inductance, "H")
+
+    def __str__(self):
+        return f"Coil, {self.turns}({self.layers})"
 
 
 class Stage:
-    def __init__(self, coil, position, trigger_position, capacitance, voltage):
+    def __init__(self, coil, position, trigger_position, capacitance, initial_voltage):
         self.coil = coil
         self.pos = position  # Refers to axial distance of coil center
         self.trigger_pos = trigger_position
 
         self.capacitance = capacitance
-        self.voltage = voltage
+        self.initial_voltage = initial_voltage
+        self.voltage = 0
 
-        coil.resistance = 2 * math.sqrt(coil.inductance / self.capacitance)
-        coil.added_resistance = coil.resistance - coil.wire_resistance
         coil.pos = position
-        print("Added resistance", coil.added_resistance, "Ohms")
+        # coil.resistance = 2 * math.sqrt(coil.inductance / self.capacitance)
+        # coil.added_resistance = coil.resistance - coil.wire_resistance
+        # coil.tau = coil.inductance / coil.resistance
+        # print("Added resistance", coil.added_resistance, "Ohms")
+
+    def __str__(self):
+        return f"Driver, {self}({self.pos})"
 
 
 class Projectile:
@@ -74,6 +90,9 @@ class Projectile:
         self.velocity_list = []
         self.acceleration_list = []
         self.energy_list = []
+
+    def __str__(self):
+        return f"Projectile, {self}({self.pos})"
 
 
 class Material:
