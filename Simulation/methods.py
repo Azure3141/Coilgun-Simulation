@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import scipy as sp
 import parameters
 
@@ -57,6 +58,35 @@ def solve_currents(stage, projectile, driver_step, armature_step):
     # transfer_eff = pow(M, 2) / (armature.inductance * driver.inductance)
     transfer_eff = 1
     armature.current = transfer_eff * -M / armature.inductance * driver.current * (1 - pow(math.e, -armature_step / armature.tau))
+
+
+def solve_stresses(coil):
+    nu = coil.material.poisson
+    a1 = coil.r_inner - coil.wire_d / 2
+    a2 = coil.r_outer + coil.wire_d / 2
+    alpha = a2 / a1
+
+    w = (a2 - a1) / parameters.stress_element_divisions
+    hoop_stresses = []
+    radial_stresses = []
+
+    for r in np.arange(a1, a2, w):
+        rho = r / a1
+        J = coil.current / coil.wire_area
+        B1 = parameters.mu0 * J * a1 * (alpha - 1)
+        B2 = 0
+
+        K = (alpha * B1 - B2) * J * a1 / (alpha - 1)
+        M = (B2 - B1) * J * a1 / (alpha - 1)
+
+        sigma_theta = K * (2 + nu) / (3 * (alpha + 1)) * (pow(alpha, 2) + alpha + 1 + pow(alpha, 2) / pow(rho, 2) - rho * (1 + 2 * nu) * (alpha + 1) / (2 + nu)) - M * (3 + nu) / 8 * (pow(alpha, 2) + 1 + pow(alpha, 2) / pow(rho, 2) - (1 + 3 * nu) / (3 + nu) * pow(rho, 2))
+        sigma_r = K * (2 + nu) / (3 * (alpha + 1)) * (pow(alpha, 2) + alpha + 1 - pow(alpha, 2) / pow(rho, 2) - (alpha + 1) * rho) - M * (3 + nu) / 8 * (pow(alpha, 2) + 1 - pow(alpha, 2) / pow(rho, 2) - pow(rho, 2))
+
+        hoop_stresses.append(sigma_theta)
+        radial_stresses.append(sigma_r)
+
+    coil.hoop_stress_list = np.vstack((coil.hoop_stress_list, hoop_stresses))
+    coil.radial_stress_list = np.vstack((coil.radial_stress_list, radial_stresses))
 
 
 def increment_time(timestep, coil):

@@ -22,6 +22,8 @@ def run_turn(timestep, stage_list, projectile):
         methods.solve_thermals(driver, timestep)
         methods.solve_energy(driver, timestep)
 
+        methods.solve_stresses(driver)
+
         force += methods.magnetic_force(stage, projectile)
 
     methods.increment_time(timestep, armature)

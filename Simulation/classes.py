@@ -44,14 +44,18 @@ class Coil:
         self.energy_list = []
         self.temperature_list = []
 
+        self.hoop_stress_list = np.empty((0, parameters.stress_element_divisions))
+        self.radial_stress_list = np.empty((0, parameters.stress_element_divisions))
+        self.radius_list = []
+
         # print("Wire Length", self.wire_length, "m")
         # print("Wire Mass", self.wire_mass, "kg")
+        # print("Wire Diameter", self.wire_d)
+        # print("Layers", self.layers)
         print("Turns", self.turns)
         print("Coil Length", self.length)
-        print("Wire Diameter", self.wire_d)
-        print("Layers", self.layers)
-        # print("Resistance", self.wire_resistance, "Ohm")
-        # print("Inductance", self.inductance, "H")
+        print("Resistance", self.wire_resistance, "Ohm")
+        print("Inductance", self.inductance, "H")
 
     def __str__(self):
         return f"Coil, {self.turns}({self.layers})"
@@ -96,9 +100,10 @@ class Projectile:
 
 
 class Material:
-    def __init__(self, density, heat_capacity, resistivity, alpha):
+    def __init__(self, density, heat_capacity, resistivity, alpha, poisson):
         self.density = density
         self.heat_capacity = heat_capacity
         self.resistivity = resistivity
         self.alpha = alpha
+        self.poisson = poisson
 
