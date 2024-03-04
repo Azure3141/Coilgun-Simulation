@@ -14,13 +14,16 @@ def run_turn(timestep, stage_list, projectile):
         projectile.stage += 1
         print("Switched stage", switch + 1)
 
+    armature.current = 0
     for stage in on_drivers:
         driver = stage.coil
 
         methods.increment_time(timestep, driver)
-        methods.solve_currents(stage, projectile, driver.time_on, armature.time_on)
+        methods.solve_driver_current(stage, driver.time_on)
         methods.solve_thermals(driver, timestep)
         methods.solve_energy(driver, timestep)
+
+        armature.current += methods.solve_armature_current(stage, projectile, armature.time_on)
 
         methods.solve_stresses(driver)
 

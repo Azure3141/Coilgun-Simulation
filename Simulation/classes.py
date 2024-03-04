@@ -53,7 +53,7 @@ class Coil:
         # print("Wire Diameter", self.wire_d)
         # print("Layers", self.layers)
         print("Turns", self.turns)
-        print("Coil Length", self.length)
+        print("Coil Length", self.length, "m")
         print("Resistance", self.wire_resistance, "Ohm")
         print("Inductance", self.inductance, "H")
 

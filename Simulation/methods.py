@@ -26,11 +26,8 @@ def mutual_inductance(stage, projectile):
     return M
 
 
-def solve_currents(stage, projectile, driver_step, armature_step):
-    armature = projectile.coil
+def solve_driver_current(stage, driver_step):
     driver = stage.coil
-    M = mutual_inductance(stage, projectile)
-
 
     # driver.current = stage.initial_voltage / driver.inductance * driver_step * \
     #                       pow(math.e, -driver.resistance / (2 * driver.inductance) * driver_step)
@@ -55,10 +52,15 @@ def solve_currents(stage, projectile, driver_step, armature_step):
         driver.peak_current = driver.current
         driver.diode_step = driver_step
 
+def solve_armature_current(stage, projectile, armature_step):
+    armature = projectile.coil
+    driver = stage.coil
+    M = mutual_inductance(stage, projectile)
+
     # transfer_eff = pow(M, 2) / (armature.inductance * driver.inductance)
     transfer_eff = 1
-    armature.current = transfer_eff * -M / armature.inductance * driver.current * (1 - pow(math.e, -armature_step / armature.tau))
-
+    armature_current = transfer_eff * -M / armature.inductance * driver.current * (1 - pow(math.e, -armature_step / armature.tau))
+    return armature_current
 
 def solve_stresses(coil):
     nu = coil.material.poisson
