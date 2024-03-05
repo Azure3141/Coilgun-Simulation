@@ -32,14 +32,14 @@ stage_count = 20
 stage_list = []
 
 # Material, inner radius, length, layers, wire diameter:
-armature = classes.Coil(copper, 0.33, 2, 1, 0.025)
+armature = classes.Coil(copper, 0.33, 1, 1, 0.025)
 # Coil, initial position, mass
 projectile = classes.Projectile(armature, 0.05, 1250)
 
 # Material, inner radius, length, layers, wire diameter:
-drivers = [classes.Coil(copper, 0.35, 2, 1, 0.025) for i in range(stage_count)]
+drivers = [classes.Coil(copper, 0.35, 1, 1, 0.025) for i in range(stage_count)]
 # Coil, position, trigger position, capacitance, charge voltage
-stages = [classes.Stage(drivers[j], 2.0 * j, 2.0 * j, 0.02, 50000) for j in range(stage_count)]
+stages = [classes.Stage(drivers[j], 2.0 * j, 1.95 * j, 0.02, 50000) for j in range(stage_count)]
 
 stages[0].capacitance = 0.075
 stages[0].layers = 3
@@ -55,7 +55,7 @@ driver_energy_sum = 0.
 driver_total_energy = []
 
 runtime = 0.25
-timestep = 0.0001
+timestep = 0.001
 
 for step in np.arange(0, runtime, timestep):
     # Timestep, driver list, projectile

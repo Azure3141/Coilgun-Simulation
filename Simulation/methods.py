@@ -74,7 +74,7 @@ def solve_stresses(coil):
 
     for r in np.arange(a1, a2, w):
         rho = r / a1
-        J = coil.current / coil.wire_area
+        J = coil.current / (coil.wire_area * coil.turns / coil.layers)
         B1 = parameters.mu0 * J * a1 * (alpha - 1)
         B2 = 0
 
