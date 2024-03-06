@@ -27,35 +27,64 @@ copper = parameters.copper
 #     stage_list.append(stages[i])
 
 
-
-stage_count = 20
-stage_list = []
-
 # Material, inner radius, length, layers, wire diameter:
-armature = classes.Coil(copper, 0.33, 1, 1, 0.025)
+armature = classes.Coil(copper, 0.33, 2, 1, 0.05)
 # Coil, initial position, mass
-projectile = classes.Projectile(armature, 0.05, 1250)
+projectile = classes.Projectile(armature, 0.1, 1250)
 
-# Material, inner radius, length, layers, wire diameter:
-drivers = [classes.Coil(copper, 0.35, 1, 1, 0.025) for i in range(stage_count)]
-# Coil, position, trigger position, capacitance, charge voltage
-stages = [classes.Stage(drivers[j], 2.0 * j, 1.95 * j, 0.02, 50000) for j in range(stage_count)]
+stage_list = []
+spacing = 3
+t_spacing = 3
 
-stages[0].capacitance = 0.075
-stages[0].layers = 3
-stages[1].capacitance = 0.05
-stages[1].layers = 2
-
-for i in range(stage_count):
+count1 = 1
+count2 = 4
+count3 = 5
+count4 = 10
+stage_count = count1 + count2 + count3 + count4
+drivers = []
+stages = []
+for i in range(count1):
+    # Material, inner radius, length, layers, wire diameter:
+    drivers.append(classes.Coil(copper, 0.35, 2, 4, 0.05))
+    # Coil, position, trigger position, capacitance, charge voltage
+    stages.append(classes.Stage(drivers[i], spacing * i, t_spacing * i, 0.05, 200000))
     stage_list.append(stages[i])
+
+for i in range(count2):
+    j = i + count1
+    # Material, inner radius, length, layers, wire diameter:
+    drivers.append(classes.Coil(copper, 0.35, 2, 2, 0.05))
+    # Coil, position, trigger position, capacitance, charge voltage
+    stages.append(classes.Stage(drivers[j], spacing * j, t_spacing * j, 0.01 - i * 0.0005, 200000))
+    stage_list.append(stages[j])
+
+for i in range(count3):
+    j = i + count1 + count2
+    # Material, inner radius, length, layers, wire diameter:
+    drivers.append(classes.Coil(copper, 0.35, 2, 1, 0.05))
+    # Coil, position, trigger position, capacitance, charge voltage
+    stages.append(classes.Stage(drivers[j], spacing * j, t_spacing * j, 0.01 - i * 0.001, 200000))
+    stage_list.append(stages[j])
+
+for i in range(count4):
+    j = i + count1 + count2 + count3
+    # Material, inner radius, length, layers, wire diameter:
+    drivers.append(classes.Coil(copper, 0.35, 2, 1, 0.05))
+    # Coil, position, trigger position, capacitance, charge voltage
+    stages.append(classes.Stage(drivers[j], spacing * j, t_spacing * j, 0.015 - i * 0.001, 200000))
+    stage_list.append(stages[j])
+
+
+
+
 
 
 efficiency = []
 driver_energy_sum = 0.
 driver_total_energy = []
 
-runtime = 0.25
-timestep = 0.001
+runtime = 0.3
+timestep = 0.0005
 
 for step in np.arange(0, runtime, timestep):
     # Timestep, driver list, projectile

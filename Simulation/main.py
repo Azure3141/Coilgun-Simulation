@@ -18,7 +18,7 @@ driver5 = classes.Coil(copper, 0.015, 0.05, 2, 0.00129)
 
 # Stages
 # Coil, position, trigger position, capacitance, charge voltage
-stage1 = classes.Stage(driver1, 0.0, 0.0, 0.0024 * 2, 450)
+stage1 = classes.Stage(driver1, 0.0, 0.0, 0.003 * 2, 450)
 stage2 = classes.Stage(driver2, 0.1, 0.1, 0.0024 * 2, 450)
 stage3 = classes.Stage(driver3, 0.2, 0.2, 0.0024 * 2, 450)
 stage4 = classes.Stage(driver4, 0.3, 0.3, 0.0024 * 2, 450)
@@ -31,7 +31,7 @@ projectile = classes.Projectile(armature, 0.01, 0.1)
 stage_list = [stage1, stage2, stage3, stage4, stage5]
 efficiency = []
 
-runtime = 0.004
+runtime = 0.05
 timestep = 0.0001
 
 for step in np.arange(0, runtime, timestep):
@@ -50,19 +50,19 @@ time = np.arange(0, runtime, timestep)
 
 figv, v = plt.subplots()
 v.plot(time, projectile.velocity_list)
-v.set(xlabel='Time (s)', ylabel='Velocity (m/s)', title='Projectile Velocity')
+v.set(xlabel='Time (s)', ylabel='Velocity (m/s)', title='Subscale Projectile Velocity')
 figv.savefig("vel.png")
 
 figa, p = plt.subplots()
 p.plot(time, projectile.acceleration_list)
-p.set(xlabel='Time (s)', ylabel='Acceleration (m/s^2)', title='Projectile Acceleration')
+p.set(xlabel='Time (s)', ylabel='Acceleration (m/s^2)', title='Subscale Projectile Acceleration')
 figa.savefig("accel.png")
 
 figi, i = plt.subplots()
 i.plot(time, projectile.coil.currents_list)
 for stage in range(len(stage_list)):
     i.plot(time, stage_list[stage].coil.currents_list)
-i.set(xlabel='Time (s)', ylabel='Currents (A)', title='Currents')
+i.set(xlabel='Time (s)', ylabel='Currents (A)', title='Subscale Currents')
 i.legend(['Armature', 'Driver 1', 'Driver 2', 'Driver 3', 'Driver 4', 'Driver 5'])
 figi.savefig("currents.png")
 
@@ -76,14 +76,14 @@ figi.savefig("currents.png")
 
 fign, n = plt.subplots()
 n.plot(time, efficiency)
-n.set(xlabel='Time (s)', ylabel='Efficiency', title='Coilgun Efficiency')
+n.set(xlabel='Time (s)', ylabel='Efficiency', title='Subscale Coilgun Efficiency')
 fign.savefig("efficiency.png")
 
 fige, e = plt.subplots()
 e.plot(time, projectile.coil.energy_list)
 for stage in range(len(stage_list)):
     e.plot(time, stage_list[stage].coil.energy_list)
-e.set(xlabel='Time (s)', ylabel='Energy (J)', title='Energy')
+e.set(xlabel='Time (s)', ylabel='Energy (J)', title='Subscale Energy')
 e.legend(['Armature', 'Driver 1', 'Driver 2', 'Driver 3', 'Driver 4', 'Driver 5'])
 fige.savefig("energy.png")
 

@@ -26,24 +26,30 @@ def mutual_inductance(stage, projectile):
     return M
 
 
-def solve_driver_current(stage, driver_step):
+def solve_driver_current(stage, projectile, driver_step):
     driver = stage.coil
+    armature = projectile.coil
 
     # driver.current = stage.initial_voltage / driver.inductance * driver_step * \
     #                       pow(math.e, -driver.resistance / (2 * driver.inductance) * driver_step)
 
+    # M = mutual_inductance(projectile, stage)
+    # subtraction = M / driver.inductance * armature.current
+    subtraction = 0
+
     # Natural response frequency
     omega = math.sqrt(1/(driver.inductance * stage.capacitance) - pow(driver.resistance, 2) / (4 * pow(driver.inductance, 2)))
+    driver.tau = driver.inductance / driver.resistance
 
     # Diode becomes active when capacitor voltage reaches 0
     if(driver.voltage < 0):
         # RL current model
-        driver.current = driver.peak_current * pow(math.e, -1 / driver.tau * (driver_step - driver.diode_step))
+        driver.current = driver.peak_current * pow(math.e, -1 / driver.tau * (driver_step - driver.diode_step)) - subtraction
         driver.voltage = -0.1
     else:
         # RLC current model
         driver.current = (stage.capacitance * stage.initial_voltage * pow(math.e, -driver_step/(2 * driver.tau)) *
-                          (4 * pow(omega, 2) + pow(1 / driver.tau, 2)) * math.sin(driver_step * omega)) / (4 * omega)
+                          (4 * pow(omega, 2) + pow(1 / driver.tau, 2)) * math.sin(driver_step * omega)) / (4 * omega) - subtraction
 
         # Capacitor voltage
         driver.voltage = stage.initial_voltage * pow(math.e, -driver_step/(2 * driver.tau)) * \
@@ -74,7 +80,7 @@ def solve_stresses(coil):
 
     for r in np.arange(a1, a2, w):
         rho = r / a1
-        J = coil.current / (coil.wire_area * coil.turns / coil.layers)
+        J = coil.current / coil.wire_area
         B1 = parameters.mu0 * J * a1 * (alpha - 1)
         B2 = 0
 
